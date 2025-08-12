@@ -1,0 +1,15 @@
+# Copy this content into a new file called ".env" in your project root
+
+# EmailJS Configuration
+# Replace these with your actual values from https://dashboard.emailjs.com
+
+# From: https://dashboard.emailjs.com/admin/account (look for "Public Key" or "User ID")
+REACT_APP_EMAILJS_PUBLIC_KEY=your_public_key_here
+
+# From: https://dashboard.emailjs.com/admin (Email Services tab)
+REACT_APP_EMAILJS_SERVICE_ID=your_service_id_here
+
+# From: https://dashboard.emailjs.com/admin (Email Templates tab)  
+REACT_APP_EMAILJS_TEMPLATE_ID=your_template_id_here
+
+# After creating the .env file, restart your development server with: npm start 

@@ -175,7 +175,7 @@ function App() {
         }}
       />
       <SEO 
-        title="Dubai Golden Residency - Expert UAE Visa Services"
+        title="Dubai Golden Residency - Expert UAE Visa Services ."
         description="Get your Dubai Golden Residency visa with expert guidance. 10-year residency, retirement visa, property evaluation & dependent visas. Apply online today!"
         keywords="Dubai Golden Residency, UAE visa, Golden Visa, Retirement Visa, Property Evaluation, Dependent Visa, Dubai residency"
         structuredData={homepageStructuredData}

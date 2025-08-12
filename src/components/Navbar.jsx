@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
 import { Menu, X } from 'lucide-react'
@@ -10,6 +10,50 @@ function Navbar() {
 
   const isActive = (path) => location.pathname === path
 
+  // Force re-render when location changes
+  useEffect(() => {
+    // This will trigger a re-render when the location changes
+  }, [location.pathname])
+
+  const handleHomeNavigation = () => {
+    // Force complete page refresh for home navigation
+    window.location.href = '/'
+  }
+
+  const handleAboutUsNavigation = () => {
+    // Force complete page refresh for About Us navigation
+    window.location.href = '/about-us'
+  }
+
+  const handleServicesNavigation = () => {
+    if (location.pathname === '/') {
+      // If already on home page, scroll to services section
+      setTimeout(() => {
+        const servicesSection = document.getElementById('services')
+        if (servicesSection) {
+          servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 100)
+    } else {
+      // If on another page, navigate to home with services hash
+      window.location.href = '/#services'
+    }
+  }
+
+  const handleLogoClick = () => {
+    handleHomeNavigation()
+  }
+
+  const handleApplyNowNavigation = () => {
+    // Force complete page refresh for Apply Now navigation
+    window.location.href = '/application-form?type=ten_years'
+  }
+
+  const handleLoginNavigation = () => {
+    // Force complete page refresh for Login navigation
+    window.location.href = '/login'
+  }
+
   return (
     <header>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200" role="navigation" aria-label="Main navigation">
@@ -18,7 +62,7 @@ function Navbar() {
             <div className="flex-shrink-0">
               <h1 
                 className="text-2xl font-bold gradient-text cursor-pointer"
-                onClick={() => navigate('/')}
+                onClick={handleLogoClick}
               >
                 Dubai Golden Residency
               </h1>
@@ -33,7 +77,7 @@ function Navbar() {
                       ? 'text-purple-600 bg-purple-50' 
                       : 'text-gray-700 hover:text-purple-600 hover:bg-gray-50'
                   }`}
-                  onClick={() => navigate('/')}
+                  onClick={handleHomeNavigation}
                 >
                   Home
                 </button>
@@ -43,7 +87,7 @@ function Navbar() {
                       ? 'text-purple-600 bg-purple-50' 
                       : 'text-gray-700 hover:text-purple-600 hover:bg-gray-50'
                   }`}
-                  onClick={() => navigate('/about-us')}
+                  onClick={handleAboutUsNavigation}
                 >
                   About Us
                 </button>
@@ -53,18 +97,7 @@ function Navbar() {
                       ? 'text-purple-600 bg-purple-50' 
                       : 'text-gray-700 hover:text-purple-600 hover:bg-gray-50'
                   }`}
-                  onClick={() => {
-                    if (location.pathname === '/') {
-                      // If already on home page, scroll to services section
-                      document.getElementById('services').scrollIntoView({ behavior: 'smooth' })
-                    } else {
-                      // If on another page, navigate to home and then scroll to services
-                      navigate('/')
-                      setTimeout(() => {
-                        document.getElementById('services').scrollIntoView({ behavior: 'smooth' })
-                      }, 100)
-                    }
-                  }}
+                  onClick={handleServicesNavigation}
                 >
                   Services
                 </button>
@@ -76,7 +109,7 @@ function Navbar() {
                 </button>
                 <Button 
                   className="bg-purple-600 hover:bg-purple-700 text-white"
-                  onClick={() => navigate('/application-form?type=ten_years')}
+                  onClick={handleApplyNowNavigation}
                 >
                   Apply Now
                 </Button>
@@ -110,7 +143,7 @@ function Navbar() {
                     : 'text-gray-700 hover:text-purple-600 hover:bg-gray-50'
                 }`}
                 onClick={() => {
-                  navigate('/')
+                  handleHomeNavigation()
                   setIsMenuOpen(false)
                 }}
               >
@@ -123,7 +156,7 @@ function Navbar() {
                     : 'text-gray-700 hover:text-purple-600 hover:bg-gray-50'
                 }`}
                 onClick={() => {
-                  navigate('/about-us')
+                  handleAboutUsNavigation()
                   setIsMenuOpen(false)
                 }}
               >
@@ -136,16 +169,7 @@ function Navbar() {
                     : 'text-gray-700 hover:text-purple-600 hover:bg-gray-50'
                 }`}
                 onClick={() => {
-                  if (location.pathname === '/') {
-                    // If already on home page, scroll to services section
-                    document.getElementById('services').scrollIntoView({ behavior: 'smooth' })
-                  } else {
-                    // If on another page, navigate to home and then scroll to services
-                    navigate('/')
-                    setTimeout(() => {
-                      document.getElementById('services').scrollIntoView({ behavior: 'smooth' })
-                    }, 100)
-                  }
+                  handleServicesNavigation()
                   setIsMenuOpen(false)
                 }}
               >
@@ -158,10 +182,7 @@ function Navbar() {
               </button>
               <Button 
                 className="w-full mt-2 bg-purple-600 hover:bg-purple-700 text-white"
-                onClick={() => {
-                  navigate('/application-form?type=ten_years')
-                  setIsMenuOpen(false)
-                }}
+                onClick={handleApplyNowNavigation}
               >
                 Apply Now
               </Button>
@@ -169,10 +190,7 @@ function Navbar() {
                 <Button 
                   variant="outline"
                   className="w-full mt-2 border-purple-600 text-purple-600 hover:bg-purple-50"
-                  onClick={() => {
-                    navigate('/login')
-                    setIsMenuOpen(false)
-                  }}
+                  onClick={handleLoginNavigation}
                 >
                   Login
                 </Button>

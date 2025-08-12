@@ -156,6 +156,16 @@ function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    
+    // Handle hash navigation for services section
+    if (window.location.hash === '#services') {
+      setTimeout(() => {
+        const servicesSection = document.getElementById('services')
+        if (servicesSection) {
+          servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 500)
+    }
   }, [])
 
   return (

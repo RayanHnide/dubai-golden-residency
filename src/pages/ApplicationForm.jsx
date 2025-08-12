@@ -607,6 +607,16 @@ function ApplicationForm() {
     return countryFlags[normalizedName] || '🌍' // Default flag if not found
   }
 
+  // Function to close all dropdowns
+  const closeAllDropdowns = () => {
+    setIsDropdownOpen(false)
+    setIsPhoneDropdownOpen(false)
+    setIsPeopleCountDropdownOpen(false)
+    setIsFamilyMembersDropdownOpen(false)
+    setSearchQuery('')
+    setPhoneSearchQuery('')
+  }
+
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -629,6 +639,11 @@ function ApplicationForm() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isDropdownOpen, isPeopleCountDropdownOpen, isFamilyMembersDropdownOpen, isPhoneDropdownOpen])
+
+  // Close dropdowns when navigating
+  useEffect(() => {
+    closeAllDropdowns()
+  }, [location.pathname])
 
   // Keyboard navigation
   const handleKeyDown = (e) => {
@@ -1095,16 +1110,19 @@ function ApplicationForm() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-4 sm:py-6 md:py-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-4 sm:py-6 md:py-8 relative z-0">
       {/* Inject custom phone input styles */}
       <style dangerouslySetInnerHTML={{ __html: phoneInputStyles }} />
       
-      <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <Button
             variant="ghost"
-            onClick={() => navigate('/')}
+            onClick={() => {
+              closeAllDropdowns()
+              navigate('/')
+            }}
             className="mb-3 sm:mb-4 text-sm sm:text-base"
           >
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
@@ -1251,7 +1269,7 @@ function ApplicationForm() {
 
                           {/* Phone Country Dropdown */}
                           {isPhoneDropdownOpen && (
-                            <div className="absolute z-50 w-80 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
+                            <div className="absolute z-40 w-80 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
                               {/* Search Input */}
                               <div className="p-3 border-b border-gray-100">
                                 <div className="relative">
@@ -1476,7 +1494,7 @@ function ApplicationForm() {
 
                       {/* Dropdown Menu */}
                       {isDropdownOpen && (
-                        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
+                        <div className="absolute z-40 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
                           {/* Search Input */}
                           <div className="p-3 border-b border-gray-100">
                             <div className="relative">
@@ -1602,7 +1620,7 @@ function ApplicationForm() {
                           </div>
 
                           {isPeopleCountDropdownOpen && (
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
+                            <div className="absolute z-40 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
                               <div className="max-h-48 overflow-y-auto">
                                 {Array.from({ length: 10 }, (_, i) => i + 1).map((count, index) => {
                                   const isHighlighted = index === highlightedPeopleCountIndex
@@ -1688,7 +1706,7 @@ function ApplicationForm() {
                                 </div>
 
                                 {isFamilyMembersDropdownOpen && (
-                                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
+                                  <div className="absolute z-40 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
                                     <div className="max-h-48 overflow-y-auto">
                                       {['husband', 'family', 'children'].map((relationship, relIndex) => {
                                         const isHighlighted = relIndex === highlightedFamilyMemberIndex

@@ -86,11 +86,19 @@ const phoneInputStyles = `
 `
 
 function ApplicationForm() {
+ 
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+ 
+
   const navigate = useNavigate()
   const location = useLocation()
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasSubmitted, setHasSubmitted] = useState(false)
+ 
   
   // Get visa type from URL parameters
   const urlParams = new URLSearchParams(location.search)
@@ -128,6 +136,7 @@ function ApplicationForm() {
 
   // Fetch countries from API
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
     const fetchCountries = async () => {
       try {
         setIsLoadingCountries(true)

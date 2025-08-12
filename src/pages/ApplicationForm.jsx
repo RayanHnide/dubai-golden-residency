@@ -134,6 +134,250 @@ function ApplicationForm() {
   const [highlightedPeopleCountIndex, setHighlightedPeopleCountIndex] = useState(-1)
   const [highlightedFamilyMemberIndex, setHighlightedFamilyMemberIndex] = useState(-1)
 
+  // New state for phone dropdown
+  const [isPhoneDropdownOpen, setIsPhoneDropdownOpen] = useState(false)
+  const [phoneSearchQuery, setPhoneSearchQuery] = useState('')
+  const [highlightedPhoneIndex, setHighlightedPhoneIndex] = useState(-1)
+  const [filteredPhoneCountries, setFilteredPhoneCountries] = useState([])
+  const [selectedCountryCode, setSelectedCountryCode] = useState('+971')
+  const [selectedCountryFlag, setSelectedCountryFlag] = useState('🇦🇪')
+  const [selectedCountryName, setSelectedCountryName] = useState('United Arab Emirates')
+
+  // Phone country codes data
+  const phoneCountries = [
+    { code: '+971', flag: '🇦🇪', name: 'United Arab Emirates' },
+    { code: '+966', flag: '🇸🇦', name: 'Saudi Arabia' },
+    { code: '+965', flag: '🇰🇼', name: 'Kuwait' },
+    { code: '+974', flag: '🇶🇦', name: 'Qatar' },
+    { code: '+973', flag: '🇧🇭', name: 'Bahrain' },
+    { code: '+968', flag: '🇴🇲', name: 'Oman' },
+    { code: '+962', flag: '🇯🇴', name: 'Jordan' },
+    { code: '+961', flag: '🇱🇧', name: 'Lebanon' },
+    { code: '+963', flag: '🇸🇾', name: 'Syria' },
+    { code: '+964', flag: '🇮🇶', name: 'Iraq' },
+    { code: '+967', flag: '🇾🇪', name: 'Yemen' },
+    { code: '+20', flag: '🇪🇬', name: 'Egypt' },
+    { code: '+212', flag: '🇲🇦', name: 'Morocco' },
+    { code: '+213', flag: '🇩🇿', name: 'Algeria' },
+    { code: '+216', flag: '🇹🇳', name: 'Tunisia' },
+    { code: '+218', flag: '🇱🇾', name: 'Libya' },
+    { code: '+249', flag: '🇸🇩', name: 'Sudan' },
+    { code: '+211', flag: '🇸🇸', name: 'South Sudan' },
+    { code: '+251', flag: '🇪🇹', name: 'Ethiopia' },
+    { code: '+252', flag: '🇸🇴', name: 'Somalia' },
+    { code: '+253', flag: '🇩🇯', name: 'Djibouti' },
+    { code: '+269', flag: '🇰🇲', name: 'Comoros' },
+    { code: '+222', flag: '🇲🇷', name: 'Mauritania' },
+    { code: '+223', flag: '🇲🇱', name: 'Mali' },
+    { code: '+227', flag: '🇳🇪', name: 'Niger' },
+    { code: '+235', flag: '🇹🇩', name: 'Chad' },
+    { code: '+237', flag: '🇨🇲', name: 'Cameroon' },
+    { code: '+234', flag: '🇳🇬', name: 'Nigeria' },
+    { code: '+233', flag: '🇬🇭', name: 'Ghana' },
+    { code: '+221', flag: '🇸🇳', name: 'Senegal' },
+    { code: '+220', flag: '🇬🇲', name: 'Gambia' },
+    { code: '+245', flag: '🇬🇼', name: 'Guinea-Bissau' },
+    { code: '+224', flag: '🇬🇳', name: 'Guinea' },
+    { code: '+232', flag: '🇸🇱', name: 'Sierra Leone' },
+    { code: '+231', flag: '🇱🇷', name: 'Liberia' },
+    { code: '+225', flag: '🇨🇮', name: 'Ivory Coast' },
+    { code: '+226', flag: '🇧🇫', name: 'Burkina Faso' },
+    { code: '+228', flag: '🇹🇬', name: 'Togo' },
+    { code: '+229', flag: '🇧🇯', name: 'Benin' },
+    { code: '+236', flag: '🇨🇫', name: 'Central African Republic' },
+    { code: '+242', flag: '🇨🇬', name: 'Congo' },
+    { code: '+243', flag: '🇨🇩', name: 'Democratic Republic of the Congo' },
+    { code: '+241', flag: '🇬🇦', name: 'Gabon' },
+    { code: '+240', flag: '🇬🇶', name: 'Equatorial Guinea' },
+    { code: '+239', flag: '🇸🇹', name: 'Sao Tome and Principe' },
+    { code: '+244', flag: '🇦🇴', name: 'Angola' },
+    { code: '+260', flag: '🇿🇲', name: 'Zambia' },
+    { code: '+265', flag: '🇲🇼', name: 'Malawi' },
+    { code: '+258', flag: '🇲🇿', name: 'Mozambique' },
+    { code: '+263', flag: '🇿🇼', name: 'Zimbabwe' },
+    { code: '+267', flag: '🇧🇼', name: 'Botswana' },
+    { code: '+264', flag: '🇳🇦', name: 'Namibia' },
+    { code: '+27', flag: '🇿🇦', name: 'South Africa' },
+    { code: '+266', flag: '🇱🇸', name: 'Lesotho' },
+    { code: '+268', flag: '🇸🇿', name: 'Eswatini' },
+    { code: '+261', flag: '🇲🇬', name: 'Madagascar' },
+    { code: '+230', flag: '🇲🇺', name: 'Mauritius' },
+    { code: '+248', flag: '🇸🇨', name: 'Seychelles' },
+    { code: '+254', flag: '🇰🇪', name: 'Kenya' },
+    { code: '+256', flag: '🇺🇬', name: 'Uganda' },
+    { code: '+255', flag: '🇹🇿', name: 'Tanzania' },
+    { code: '+257', flag: '🇧🇮', name: 'Burundi' },
+    { code: '+250', flag: '🇷🇼', name: 'Rwanda' },
+    { code: '+1', flag: '🇺🇸', name: 'United States' },
+    { code: '+1', flag: '🇨🇦', name: 'Canada' },
+    { code: '+52', flag: '🇲🇽', name: 'Mexico' },
+    { code: '+55', flag: '🇧🇷', name: 'Brazil' },
+    { code: '+54', flag: '🇦🇷', name: 'Argentina' },
+    { code: '+56', flag: '🇨🇱', name: 'Chile' },
+    { code: '+51', flag: '🇵🇪', name: 'Peru' },
+    { code: '+57', flag: '🇨🇴', name: 'Colombia' },
+    { code: '+58', flag: '🇻🇪', name: 'Venezuela' },
+    { code: '+593', flag: '🇪🇨', name: 'Ecuador' },
+    { code: '+591', flag: '🇧🇴', name: 'Bolivia' },
+    { code: '+595', flag: '🇵🇾', name: 'Paraguay' },
+    { code: '+598', flag: '🇺🇾', name: 'Uruguay' },
+    { code: '+592', flag: '🇬🇾', name: 'Guyana' },
+    { code: '+597', flag: '🇸🇷', name: 'Suriname' },
+    { code: '+594', flag: '🇬🇫', name: 'French Guiana' },
+    { code: '+44', flag: '🇬🇧', name: 'United Kingdom' },
+    { code: '+33', flag: '🇫🇷', name: 'France' },
+    { code: '+49', flag: '🇩🇪', name: 'Germany' },
+    { code: '+39', flag: '🇮🇹', name: 'Italy' },
+    { code: '+34', flag: '🇪🇸', name: 'Spain' },
+    { code: '+351', flag: '🇵🇹', name: 'Portugal' },
+    { code: '+31', flag: '🇳🇱', name: 'Netherlands' },
+    { code: '+32', flag: '🇧🇪', name: 'Belgium' },
+    { code: '+41', flag: '🇨🇭', name: 'Switzerland' },
+    { code: '+43', flag: '🇦🇹', name: 'Austria' },
+    { code: '+46', flag: '🇸🇪', name: 'Sweden' },
+    { code: '+47', flag: '🇳🇴', name: 'Norway' },
+    { code: '+45', flag: '🇩🇰', name: 'Denmark' },
+    { code: '+358', flag: '🇫🇮', name: 'Finland' },
+    { code: '+354', flag: '🇮🇸', name: 'Iceland' },
+    { code: '+353', flag: '🇮🇪', name: 'Ireland' },
+    { code: '+48', flag: '🇵🇱', name: 'Poland' },
+    { code: '+420', flag: '🇨🇿', name: 'Czech Republic' },
+    { code: '+421', flag: '🇸🇰', name: 'Slovakia' },
+    { code: '+36', flag: '🇭🇺', name: 'Hungary' },
+    { code: '+40', flag: '🇷🇴', name: 'Romania' },
+    { code: '+359', flag: '🇧🇬', name: 'Bulgaria' },
+    { code: '+385', flag: '🇭🇷', name: 'Croatia' },
+    { code: '+386', flag: '🇸🇮', name: 'Slovenia' },
+    { code: '+381', flag: '🇷🇸', name: 'Serbia' },
+    { code: '+382', flag: '🇲🇪', name: 'Montenegro' },
+    { code: '+387', flag: '🇧🇦', name: 'Bosnia and Herzegovina' },
+    { code: '+389', flag: '🇲🇰', name: 'Macedonia' },
+    { code: '+355', flag: '🇦🇱', name: 'Albania' },
+    { code: '+30', flag: '🇬🇷', name: 'Greece' },
+    { code: '+357', flag: '🇨🇾', name: 'Cyprus' },
+    { code: '+356', flag: '🇲🇹', name: 'Malta' },
+    { code: '+7', flag: '🇷🇺', name: 'Russia' },
+    { code: '+380', flag: '🇺🇦', name: 'Ukraine' },
+    { code: '+375', flag: '🇧🇾', name: 'Belarus' },
+    { code: '+373', flag: '🇲🇩', name: 'Moldova' },
+    { code: '+371', flag: '🇱🇻', name: 'Latvia' },
+    { code: '+370', flag: '🇱🇹', name: 'Lithuania' },
+    { code: '+372', flag: '🇪🇪', name: 'Estonia' },
+    { code: '+995', flag: '🇬🇪', name: 'Georgia' },
+    { code: '+374', flag: '🇦🇲', name: 'Armenia' },
+    { code: '+994', flag: '🇦🇿', name: 'Azerbaijan' },
+    { code: '+7', flag: '🇰🇿', name: 'Kazakhstan' },
+    { code: '+998', flag: '🇺🇿', name: 'Uzbekistan' },
+    { code: '+993', flag: '🇹🇲', name: 'Turkmenistan' },
+    { code: '+996', flag: '🇰🇬', name: 'Kyrgyzstan' },
+    { code: '+992', flag: '🇹🇯', name: 'Tajikistan' },
+    { code: '+86', flag: '🇨🇳', name: 'China' },
+    { code: '+81', flag: '🇯🇵', name: 'Japan' },
+    { code: '+82', flag: '🇰🇷', name: 'South Korea' },
+    { code: '+850', flag: '🇰🇵', name: 'North Korea' },
+    { code: '+976', flag: '🇲🇳', name: 'Mongolia' },
+    { code: '+91', flag: '🇮🇳', name: 'India' },
+    { code: '+92', flag: '🇵🇰', name: 'Pakistan' },
+    { code: '+880', flag: '🇧🇩', name: 'Bangladesh' },
+    { code: '+94', flag: '🇱🇰', name: 'Sri Lanka' },
+    { code: '+977', flag: '🇳🇵', name: 'Nepal' },
+    { code: '+975', flag: '🇧🇹', name: 'Bhutan' },
+    { code: '+95', flag: '🇲🇲', name: 'Myanmar' },
+    { code: '+66', flag: '🇹🇭', name: 'Thailand' },
+    { code: '+856', flag: '🇱🇦', name: 'Laos' },
+    { code: '+855', flag: '🇰🇭', name: 'Cambodia' },
+    { code: '+84', flag: '🇻🇳', name: 'Vietnam' },
+    { code: '+60', flag: '🇲🇾', name: 'Malaysia' },
+    { code: '+65', flag: '🇸🇬', name: 'Singapore' },
+    { code: '+62', flag: '🇮🇩', name: 'Indonesia' },
+    { code: '+63', flag: '🇵🇭', name: 'Philippines' },
+    { code: '+673', flag: '🇧🇳', name: 'Brunei' },
+    { code: '+670', flag: '🇹🇱', name: 'East Timor' },
+    { code: '+61', flag: '🇦🇺', name: 'Australia' },
+    { code: '+64', flag: '🇳🇿', name: 'New Zealand' },
+    { code: '+675', flag: '🇵🇬', name: 'Papua New Guinea' },
+    { code: '+679', flag: '🇫🇯', name: 'Fiji' },
+    { code: '+677', flag: '🇸🇧', name: 'Solomon Islands' },
+    { code: '+678', flag: '🇻🇺', name: 'Vanuatu' },
+    { code: '+687', flag: '🇳🇨', name: 'New Caledonia' },
+    { code: '+689', flag: '🇵🇫', name: 'French Polynesia' },
+    { code: '+685', flag: '🇼🇸', name: 'Samoa' },
+    { code: '+676', flag: '🇹🇴', name: 'Tonga' },
+    { code: '+686', flag: '🇰🇮', name: 'Kiribati' },
+    { code: '+688', flag: '🇹🇻', name: 'Tuvalu' },
+    { code: '+674', flag: '🇳🇷', name: 'Nauru' },
+    { code: '+680', flag: '🇵🇼', name: 'Palau' },
+    { code: '+692', flag: '🇲🇭', name: 'Marshall Islands' },
+    { code: '+691', flag: '🇫🇲', name: 'Micronesia' },
+    { code: '+90', flag: '🇹🇷', name: 'Turkey' },
+    { code: '+98', flag: '🇮🇷', name: 'Iran' },
+    { code: '+93', flag: '🇦🇫', name: 'Afghanistan' },
+    { code: '+972', flag: '🇮🇱', name: 'Israel' },
+    { code: '+970', flag: '🇵🇸', name: 'Palestine' }
+  ]
+
+  // Filter phone countries based on search
+  useEffect(() => {
+    if (phoneSearchQuery.trim() === '') {
+      setFilteredPhoneCountries(phoneCountries)
+    } else {
+      const filtered = phoneCountries.filter(country => {
+        const countryName = country.name.toLowerCase()
+        const countryCode = country.code.toLowerCase()
+        const searchTerm = phoneSearchQuery.toLowerCase()
+        return countryName.includes(searchTerm) || countryCode.includes(searchTerm)
+      })
+      setFilteredPhoneCountries(filtered)
+    }
+    setHighlightedPhoneIndex(-1)
+  }, [phoneCountries, phoneSearchQuery])
+
+  // Keyboard navigation for phone dropdown
+  const handlePhoneKeyDown = (e) => {
+    if (!isPhoneDropdownOpen) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        setIsPhoneDropdownOpen(true)
+      }
+      return
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setHighlightedPhoneIndex(prev => 
+          prev < filteredPhoneCountries.length - 1 ? prev + 1 : 0
+        )
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setHighlightedPhoneIndex(prev => 
+          prev > 0 ? prev - 1 : filteredPhoneCountries.length - 1
+        )
+        break
+      case 'Enter':
+        e.preventDefault()
+        if (highlightedPhoneIndex >= 0 && filteredPhoneCountries[highlightedPhoneIndex]) {
+          const selectedCountry = filteredPhoneCountries[highlightedPhoneIndex]
+          setSelectedCountryCode(selectedCountry.code)
+          setSelectedCountryFlag(selectedCountry.flag)
+          setSelectedCountryName(selectedCountry.name)
+          setFormData(prev => ({
+            ...prev,
+            phone: selectedCountry.code
+          }))
+          setIsPhoneDropdownOpen(false)
+          setPhoneSearchQuery('')
+        }
+        break
+      case 'Escape':
+        e.preventDefault()
+        setIsPhoneDropdownOpen(false)
+        setPhoneSearchQuery('')
+        break
+    }
+  }
+
   // Fetch countries from API
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -376,11 +620,15 @@ function ApplicationForm() {
       if (isFamilyMembersDropdownOpen && !event.target.closest('.family-members-dropdown')) {
         setIsFamilyMembersDropdownOpen(false)
       }
+      if (isPhoneDropdownOpen && !event.target.closest('.phone-number-dropdown')) {
+        setIsPhoneDropdownOpen(false)
+        setPhoneSearchQuery('')
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isDropdownOpen, isPeopleCountDropdownOpen, isFamilyMembersDropdownOpen])
+  }, [isDropdownOpen, isPeopleCountDropdownOpen, isFamilyMembersDropdownOpen, isPhoneDropdownOpen])
 
   // Keyboard navigation
   const handleKeyDown = (e) => {
@@ -615,8 +863,54 @@ function ApplicationForm() {
       // Improved phone validation - check for complete phone number
       if (!formData.phone || formData.phone.trim() === '' || formData.phone.trim() === '+971') {
         newErrors.phone = 'Phone number is required'
-      } else if (formData.phone.length < 10) {
-        newErrors.phone = 'Please enter a complete phone number'
+      } else {
+        // Get the phone number without country code
+        const phoneWithoutCode = formData.phone.replace(selectedCountryCode, '')
+        
+        // Validate phone number length based on country code
+        let minLength = 7
+        let maxLength = 15
+        
+        // Set specific length requirements for common countries
+        if (selectedCountryCode === '+971') { // UAE
+          minLength = 8
+          maxLength = 9
+        } else if (selectedCountryCode === '+966') { // Saudi Arabia
+          minLength = 8
+          maxLength = 9
+        } else if (selectedCountryCode === '+965') { // Kuwait
+          minLength = 7
+          maxLength = 8
+        } else if (selectedCountryCode === '+974') { // Qatar
+          minLength = 7
+          maxLength = 8
+        } else if (selectedCountryCode === '+973') { // Bahrain
+          minLength = 7
+          maxLength = 8
+        } else if (selectedCountryCode === '+968') { // Oman
+          minLength = 7
+          maxLength = 8
+        } else if (selectedCountryCode === '+1') { // US/Canada
+          minLength = 10
+          maxLength = 10
+        } else if (selectedCountryCode === '+44') { // UK
+          minLength = 10
+          maxLength = 11
+        } else if (selectedCountryCode === '+91') { // India
+          minLength = 10
+          maxLength = 10
+        } else if (selectedCountryCode === '+86') { // China
+          minLength = 10
+          maxLength = 11
+        }
+        
+        if (phoneWithoutCode.length < minLength) {
+          newErrors.phone = `Phone number must be at least ${minLength} digits`
+        } else if (phoneWithoutCode.length > maxLength) {
+          newErrors.phone = `Phone number cannot exceed ${maxLength} digits`
+        } else if (!/^\d+$/.test(phoneWithoutCode)) {
+          newErrors.phone = 'Phone number must contain only digits'
+        }
       }
       
       if (!formData.country_id) newErrors.country_id = 'Nationality is required'
@@ -919,16 +1213,203 @@ function ApplicationForm() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {formData.type === 'family' ? 'Sponsor Phone Number' : 'Phone Number'} <span className="text-red-500">*</span>
                     </label>
-                    <PhoneInput
-                      placeholder="Enter phone number"
-                      value={formData.phone}
-                      onChange={handlePhoneChange}
-                      defaultCountry="AE"
-                      international={true}
-                      withCountryCallingCode={true}
-                      countryCallingCodeEditable={false}
-                      className={`PhoneInputInput ${errors.phone ? 'error' : ''}`}
-                    />
+                    <div className="relative phone-number-dropdown">
+                      <div className="flex">
+                        {/* Country Code Dropdown */}
+                        <div className="relative">
+                          <div
+                            onClick={() => setIsPhoneDropdownOpen(!isPhoneDropdownOpen)}
+                            onKeyDown={handlePhoneKeyDown}
+                            tabIndex={0}
+                            className={`flex items-center space-x-2 px-3 py-3 border border-r-0 rounded-l-md cursor-pointer transition-all duration-200 ${
+                              isPhoneDropdownOpen 
+                                ? 'border-purple-500 ring-2 ring-purple-500 ring-opacity-20' 
+                                : 'border-gray-300 hover:border-purple-400'
+                            } ${errors.phone ? 'border-red-500' : ''}`}
+                          >
+                            <span className="text-lg">{selectedCountryFlag}</span>
+                            <span className="text-sm font-medium text-gray-700">{selectedCountryCode}</span>
+                            <svg
+                              className={`w-4 h-4 transition-transform duration-200 ${
+                                isPhoneDropdownOpen ? 'rotate-180' : ''
+                              }`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+
+                          {/* Phone Country Dropdown */}
+                          {isPhoneDropdownOpen && (
+                            <div className="absolute z-50 w-80 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
+                              {/* Search Input */}
+                              <div className="p-3 border-b border-gray-100">
+                                <div className="relative">
+                                  <input
+                                    type="text"
+                                    placeholder="Search countries..."
+                                    value={phoneSearchQuery}
+                                    onChange={(e) => setPhoneSearchQuery(e.target.value)}
+                                    onKeyDown={handlePhoneKeyDown}
+                                    className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 pl-8 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                    autoFocus
+                                  />
+                                  <svg
+                                    className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                  </svg>
+                                </div>
+                              </div>
+
+                              {/* Countries List */}
+                              <div className="max-h-48 overflow-y-auto">
+                                {filteredPhoneCountries.length === 0 ? (
+                                  <div className="px-3 py-4 text-center text-gray-500 text-sm">
+                                    No countries found
+                                  </div>
+                                ) : (
+                                  filteredPhoneCountries.map((country, index) => {
+                                    const isHighlighted = index === highlightedPhoneIndex
+                                    const isSelected = selectedCountryCode === country.code
+                                    
+                                    return (
+                                      <div
+                                        key={index}
+                                        onClick={() => {
+                                          setSelectedCountryCode(country.code)
+                                          setSelectedCountryFlag(country.flag)
+                                          setSelectedCountryName(country.name)
+                                          setFormData(prev => ({
+                                            ...prev,
+                                            phone: country.code
+                                          }))
+                                          setIsPhoneDropdownOpen(false)
+                                          setPhoneSearchQuery('')
+                                        }}
+                                        className={`px-3 py-2 cursor-pointer transition-colors duration-150 flex items-center space-x-3 ${
+                                          isHighlighted 
+                                            ? 'bg-purple-50 text-purple-900' 
+                                            : 'hover:bg-gray-50'
+                                        } ${isSelected ? 'bg-purple-100 text-purple-900' : ''}`}
+                                      >
+                                        <div className="flex items-center space-x-3 flex-1">
+                                          <span className="text-lg">{country.flag}</span>
+                                          <span className="text-sm font-medium">{country.name}</span>
+                                        </div>
+                                        <span className="text-sm text-gray-500">{country.code}</span>
+                                        {isSelected && (
+                                          <svg
+                                            className="w-4 h-4 text-purple-600"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                          >
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                          </svg>
+                                        )}
+                                      </div>
+                                    )
+                                  })
+                                )}
+                              </div>
+
+                              {/* Footer */}
+                              <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 text-xs text-gray-500">
+                                Use ↑↓ to navigate, Enter to select, Esc to close
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Phone Number Input */}
+                        <input
+                          type="tel"
+                          value={formData.phone.replace(selectedCountryCode, '')}
+                          onChange={(e) => {
+                            const phoneNumber = selectedCountryCode + e.target.value.replace(/[^0-9]/g, '')
+                            setFormData(prev => ({
+                              ...prev,
+                              phone: phoneNumber
+                            }))
+                            
+                            // Real-time validation
+                            const phoneWithoutCode = e.target.value.replace(/[^0-9]/g, '')
+                            let minLength = 7
+                            let maxLength = 15
+                            
+                            // Set specific length requirements for common countries
+                            if (selectedCountryCode === '+971') { // UAE
+                              minLength = 8
+                              maxLength = 9
+                            } else if (selectedCountryCode === '+966') { // Saudi Arabia
+                              minLength = 8
+                              maxLength = 9
+                            } else if (selectedCountryCode === '+965') { // Kuwait
+                              minLength = 7
+                              maxLength = 8
+                            } else if (selectedCountryCode === '+974') { // Qatar
+                              minLength = 7
+                              maxLength = 8
+                            } else if (selectedCountryCode === '+973') { // Bahrain
+                              minLength = 7
+                              maxLength = 8
+                            } else if (selectedCountryCode === '+968') { // Oman
+                              minLength = 7
+                              maxLength = 8
+                            } else if (selectedCountryCode === '+1') { // US/Canada
+                              minLength = 10
+                              maxLength = 10
+                            } else if (selectedCountryCode === '+44') { // UK
+                              minLength = 10
+                              maxLength = 11
+                            } else if (selectedCountryCode === '+91') { // India
+                              minLength = 10
+                              maxLength = 10
+                            } else if (selectedCountryCode === '+86') { // China
+                              minLength = 10
+                              maxLength = 11
+                            }
+                            
+                            // Clear error if validation passes
+                            if (phoneWithoutCode.length >= minLength && phoneWithoutCode.length <= maxLength && /^\d+$/.test(phoneWithoutCode)) {
+                              if (errors.phone) {
+                                setErrors(prev => ({
+                                  ...prev,
+                                  phone: ''
+                                }))
+                              }
+                            } else if (phoneWithoutCode.length > 0) {
+                              // Show error if validation fails
+                              let errorMessage = ''
+                              if (phoneWithoutCode.length < minLength) {
+                                errorMessage = `Phone number must be at least ${minLength} digits`
+                              } else if (phoneWithoutCode.length > maxLength) {
+                                errorMessage = `Phone number cannot exceed ${maxLength} digits`
+                              } else if (!/^\d+$/.test(phoneWithoutCode)) {
+                                errorMessage = 'Phone number must contain only digits'
+                              }
+                              
+                              if (errorMessage) {
+                                setErrors(prev => ({
+                                  ...prev,
+                                  phone: errorMessage
+                                }))
+                              }
+                            }
+                          }}
+                          placeholder="Enter phone number"
+                          className={`flex-1 text-sm sm:text-base border border-l-0 rounded-r-md p-3 focus:outline-none  ${
+                            errors.phone ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          style={{ borderLeft: 'none' }}
+                        />
+                      </div>
+                    </div>
                     {errors.phone && (
                       <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.phone}</p>
                     )}
@@ -1258,7 +1739,7 @@ function ApplicationForm() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <FileUploadField
                       name="propertyCopy"
-                      label=  {formData.type === 'family' ? 'Sponsor property Copy' : 'property Copy'}   
+                      label={formData.type === 'family' ? 'Sponsor property Copy' : 'property Copy'}   
                       description={formData.type === 'family' ? 'Upload property copy (PDF only) - Optional for Family Visa' : 'Upload property copy (PDF only)'}
                       required={formData.type !== 'family'}
                       accept=".pdf"
@@ -1267,8 +1748,7 @@ function ApplicationForm() {
                     
                     <FileUploadField
                       name="passportCopy"
-                      label=  {formData.type === 'family' ? 'Sponsor passport copy' : 'passport copy'}   
-                    
+                      label={formData.type === 'family' ? 'Sponsor passport copy' : 'passport copy'}   
                       description="Upload passport copy (PDF only)"
                       required={true}
                       accept=".pdf"
@@ -1279,7 +1759,7 @@ function ApplicationForm() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <FileUploadField
                       name="eidCopy"
-                      label=  {formData.type === 'family' ? 'Sponsor EID copy (if available)' : 'EID  copy (if available)'}   
+                      label={formData.type === 'family' ? 'Sponsor EID copy (if available)' : 'EID  copy (if available)'}   
                       description="Upload EID copy (PDF/Image)"
                       required={false}
                       accept=".pdf,.jpg,.jpeg,.png"
@@ -1288,7 +1768,7 @@ function ApplicationForm() {
                     
                     <FileUploadField
                       name="visaCopy"
-                      label=  {formData.type === 'family' ? 'Sponsor Visa copy ' : 'Visa  copy '}   
+                      label={formData.type === 'family' ? 'Sponsor Visa copy ' : 'Visa  copy '}   
                       description={formData.type === 'family' ? 'Upload visa copy (PDF/Image) - Required for Family Visa' : 'Upload visa copy (PDF/Image) - Optional'}
                       required={formData.type === 'family'}
                       accept=".pdf,.jpg,.jpeg,.png"
@@ -1441,4 +1921,4 @@ function ApplicationForm() {
   )
 }
 
-export default ApplicationForm 
+export default ApplicationForm

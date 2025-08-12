@@ -1179,6 +1179,10 @@ function ApplicationForm() {
                        {formData.type === 'family' ? 'Sponsor Name' : 'Full Name'}   <span className="text-red-500">*</span>
                       </label>
                       <Input
+                      style={{
+                        outline: 'none',
+                        
+                      }}
                         type="text"
                         name="name"
                         value={formData.name}
@@ -1196,6 +1200,10 @@ function ApplicationForm() {
                        {formData.type === 'family' ? 'Sponsor Email' : 'Email Address'} <span className="text-red-500">*</span>
                       </label>
                       <Input
+                      style={{
+                        outline: 'none',
+                        
+                      }}
                         type="email"
                         name="email"
                         value={formData.email}
@@ -1328,6 +1336,10 @@ function ApplicationForm() {
 
                         {/* Phone Number Input */}
                         <input
+                        style={{
+                          outline: 'none !important ',
+                          
+                        }}
                           type="tel"
                           value={formData.phone.replace(selectedCountryCode, '')}
                           onChange={(e) => {
@@ -1403,11 +1415,12 @@ function ApplicationForm() {
                             }
                           }}
                           placeholder="Enter phone number"
-                          className={`flex-1 text-sm sm:text-base border border-l-0 rounded-r-md p-3 focus:outline-none  ${
+                         
+                            className={`flex-1 text-sm sm:text-base border border-l-0 rounded-r-md p-3  ${
                             errors.phone ? 'border-red-500' : 'border-gray-300'
                           }`}
-                          style={{ borderLeft: 'none' }}
-                        />
+                          />
+                         
                       </div>
                     </div>
                     {errors.phone && (
@@ -1446,7 +1459,7 @@ function ApplicationForm() {
                         </span>
                         <div className="flex items-center space-x-2">
                           {isLoadingCountries && (
-                            <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-4 h-4 border-2   border-t-transparent rounded-full animate-spin"></div>
                           )}
                           <svg
                             className={`w-4 h-4 transition-transform duration-200 ${
@@ -1468,6 +1481,10 @@ function ApplicationForm() {
                           <div className="p-3 border-b border-gray-100">
                             <div className="relative">
                               <input
+                              style={{
+                                outline: 'none !important ',
+                                
+                              }}
                                 type="text"
                                 placeholder="Search countries..."
                                 value={searchQuery}

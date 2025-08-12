@@ -309,7 +309,7 @@ html {
 button:focus,
 input:focus,
 textarea:focus {
-  outline: 2px solid #667eea;
+  outline: 2px solid transparent gray;
   outline-offset: 2px;
 }
 

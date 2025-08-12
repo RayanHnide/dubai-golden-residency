@@ -611,7 +611,14 @@ function ApplicationForm() {
       if (!formData.name.trim()) newErrors.name = 'Name is required'
       if (!formData.email.trim()) newErrors.email = 'Email is required'
       else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid'
-      if (!formData.phone.trim()) newErrors.phone = 'Phone number is required'
+      
+      // Improved phone validation - check for complete phone number
+      if (!formData.phone || formData.phone.trim() === '' || formData.phone.trim() === '+971') {
+        newErrors.phone = 'Phone number is required'
+      } else if (formData.phone.length < 10) {
+        newErrors.phone = 'Please enter a complete phone number'
+      }
+      
       if (!formData.country_id) newErrors.country_id = 'Nationality is required'
       
       // Family-specific validation

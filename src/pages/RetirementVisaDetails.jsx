@@ -376,12 +376,9 @@ function RetirementVisaDetails() {
           <div className="flex justify-center space-x-6">
             <div className="flex items-center">
               <Phone className="w-5 h-5 mr-2" />
-              <span>+971 4 123 4567</span>
+              <span>+971 563 700 590</span>
             </div>
-            <div className="flex items-center">
-              <Mail className="w-5 h-5 mr-2" />
-              <span>info@uaegoldenvisa.com</span>
-            </div>
+             
           </div>
         </div>
       </footer>

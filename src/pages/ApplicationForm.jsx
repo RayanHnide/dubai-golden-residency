@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
@@ -83,6 +83,72 @@ const phoneInputStyles = `
       padding: 12px 16px 12px 90px;
     }
   }
+
+  /* Custom phone input styles */
+  .custom-phone-input {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .phone-country-selector {
+    flex-shrink: 0;
+    min-width: 120px;
+    max-width: 140px;
+  }
+  
+  .phone-number-field {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .phone-number-field input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .phone-number-field input:focus {
+    outline: none;
+    border-color: #9333ea;
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+  }
+  
+  @media (max-width: 640px) {
+    .phone-country-selector {
+      min-width: 100px;
+      max-width: 120px;
+    }
+  }
+
+  /* File upload field styles */
+  .file-upload-field {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .file-upload-field:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .file-upload-field:active {
+    transform: translateY(0);
+  }
+  
+  .file-upload-field.drag-over {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(147, 51, 234, 0.2);
+  }
+  
+  .file-upload-field.has-file {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  }
+  
+  .file-upload-field.has-file:hover {
+    background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%);
+  }
 `
 
 function ApplicationForm() {
@@ -144,7 +210,7 @@ function ApplicationForm() {
   const [selectedCountryName, setSelectedCountryName] = useState('United Arab Emirates')
 
   // Phone country codes data
-  const phoneCountries = [
+  const phoneCountries = useMemo(() => [
     { code: '+971', flag: '🇦🇪', name: 'United Arab Emirates' },
     { code: '+966', flag: '🇸🇦', name: 'Saudi Arabia' },
     { code: '+965', flag: '🇰🇼', name: 'Kuwait' },
@@ -314,7 +380,7 @@ function ApplicationForm() {
     { code: '+93', flag: '🇦🇫', name: 'Afghanistan' },
     { code: '+972', flag: '🇮🇱', name: 'Israel' },
     { code: '+970', flag: '🇵🇸', name: 'Palestine' }
-  ]
+  ], [])
 
   // Filter phone countries based on search
   useEffect(() => {
@@ -330,7 +396,7 @@ function ApplicationForm() {
       setFilteredPhoneCountries(filtered)
     }
     setHighlightedPhoneIndex(-1)
-  }, [phoneCountries, phoneSearchQuery])
+  }, [phoneSearchQuery]) // Removed phoneCountries from dependencies since it's a static array
 
   // Keyboard navigation for phone dropdown
   const handlePhoneKeyDown = (e) => {
@@ -608,14 +674,14 @@ function ApplicationForm() {
   }
 
   // Function to close all dropdowns
-  const closeAllDropdowns = () => {
+  const closeAllDropdowns = useCallback(() => {
     setIsDropdownOpen(false)
     setIsPhoneDropdownOpen(false)
     setIsPeopleCountDropdownOpen(false)
     setIsFamilyMembersDropdownOpen(false)
     setSearchQuery('')
     setPhoneSearchQuery('')
-  }
+  }, [])
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -853,10 +919,37 @@ function ApplicationForm() {
         return
       }
       
+      // Validate file type based on accept attribute
+      const allowedTypes = {
+        'healthInsurance': ['application/pdf'],
+        'propertyCopy': ['application/pdf'],
+        'passportCopy': ['application/pdf'],
+        'eidCopy': ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'],
+        'visaCopy': ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'],
+        'studioPhoto': ['image/jpeg', 'image/jpg', 'image/png']
+      }
+      
+      if (allowedTypes[fieldName] && !allowedTypes[fieldName].includes(file.type)) {
+        const fileTypeNames = {
+          'healthInsurance': 'PDF',
+          'propertyCopy': 'PDF',
+          'passportCopy': 'PDF',
+          'eidCopy': 'PDF or image (JPG, PNG)',
+          'visaCopy': 'PDF or image (JPG, PNG)',
+          'studioPhoto': 'Image (JPG, PNG)'
+        }
+        setErrors(prev => ({
+          ...prev,
+          [fieldName]: `Please upload a ${fileTypeNames[fieldName]} file`
+        }))
+        return
+      }
+      
       setFormData(prev => ({
         ...prev,
         [fieldName]: file
       }))
+      
       // Clear error when file is selected
       if (errors[fieldName]) {
         setErrors(prev => ({
@@ -864,6 +957,14 @@ function ApplicationForm() {
           [fieldName]: ''
         }))
       }
+      
+      // Show success toast for file upload
+      toast.success(`${fieldName === 'healthInsurance' ? 'Health insurance' : 
+                     fieldName === 'propertyCopy' ? 'Property copy' : 
+                     fieldName === 'passportCopy' ? 'Passport copy' : 
+                     fieldName === 'eidCopy' ? 'EID copy' : 
+                     fieldName === 'visaCopy' ? 'Visa copy' : 
+                     fieldName === 'studioPhoto' ? 'Studio photo' : 'File'} uploaded successfully!`)
     }
   }
 
@@ -1068,46 +1169,145 @@ function ApplicationForm() {
     required = false, 
     accept = ".pdf,.jpg,.jpeg,.png",
     icon = <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
-  }) => (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <div className="relative">
-        <input
-          type="file"
-          accept={accept}
-          onChange={(e) => handleFileChange(e, name)}
-          className="hidden"
-          id={name}
-        />
-        <label
-          htmlFor={name}
-          className="flex items-center justify-center w-full h-24 sm:h-28 md:h-32 px-3 sm:px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-lg appearance-none cursor-pointer hover:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-        >
-          <div className="flex flex-col items-center space-y-1 sm:space-y-2 text-center">
-            {formData[name] ? (
-              <>
-                <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
-                <span className="text-xs sm:text-sm text-gray-600 break-words max-w-full px-1">{formData[name].name}</span>
-              </>
-            ) : (
-              <>
-                {icon}
-                <span className="text-xs sm:text-sm text-gray-600 break-words max-w-full px-1">{description}</span>
-              </>
-            )}
-          </div>
+  }) => {
+    const fileInputRef = useRef(null)
+    const [isDragOver, setIsDragOver] = useState(false)
+    
+    const handleClick = () => {
+      if (fileInputRef.current) {
+        fileInputRef.current.click()
+      }
+    }
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        handleClick()
+      }
+    }
+
+    const handleDragOver = (e) => {
+      e.preventDefault()
+      setIsDragOver(true)
+    }
+
+    const handleDragLeave = (e) => {
+      e.preventDefault()
+      setIsDragOver(false)
+    }
+
+    const handleDrop = (e) => {
+      e.preventDefault()
+      setIsDragOver(false)
+      
+      const files = e.dataTransfer.files
+      if (files.length > 0) {
+        const file = files[0]
+        // Create a synthetic event to pass to handleFileChange
+        const syntheticEvent = {
+          target: {
+            files: [file]
+          }
+        }
+        handleFileChange(syntheticEvent, name)
+      }
+    }
+
+    const handleRemoveFile = (e) => {
+      e.stopPropagation()
+      setFormData(prev => ({
+        ...prev,
+        [name]: null
+      }))
+      // Clear the input value
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+      // Clear error if exists
+      if (errors[name]) {
+        setErrors(prev => ({
+          ...prev,
+          [name]: ''
+        }))
+      }
+    }
+
+    return (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
+        <div className="relative">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={accept}
+            onChange={(e) => handleFileChange(e, name)}
+            className="hidden"
+            id={name}
+          />
+          <div
+            onClick={handleClick}
+            onKeyDown={handleKeyDown}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            tabIndex={0}
+            role="button"
+            aria-label={`Upload ${label}`}
+            className={`file-upload-field flex items-center justify-center w-full h-24 sm:h-28 md:h-32 px-3 sm:px-4 transition bg-white border-2 border-dashed rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 active:bg-purple-100 ${
+              isDragOver 
+                ? 'drag-over border-purple-500 bg-purple-50 ring-2 ring-purple-500 ring-opacity-20' 
+                : formData[name]
+                ? 'has-file border-green-300 hover:border-green-400'
+                : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50'
+            }`}
+          >
+            <div className="flex flex-col items-center space-y-1 sm:space-y-2 text-center relative w-full">
+              {formData[name] ? (
+                <>
+                  <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
+                  <span className="text-xs sm:text-sm text-gray-600 break-words max-w-full px-1 font-medium">
+                    {formData[name].name}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {(formData[name].size / 1024 / 1024).toFixed(2)} MB
+                  </span>
+                  <span className="text-xs text-purple-600">Click to change file</span>
+                  
+                  {/* Remove button */}
+                  <button
+                    type="button"
+                    onClick={handleRemoveFile}
+                    className="absolute top-0 right-0 p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                    title="Remove file"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </>
+              ) : (
+                <>
+                  {icon}
+                  <span className="text-xs sm:text-sm text-gray-600 break-words max-w-full px-1">{description}</span>
+                  <span className="text-xs text-gray-500">
+                    {isDragOver ? 'Drop file here' : 'Click to upload or drag and drop'}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+        {errors[name] && (
+          <p className="text-xs sm:text-sm text-red-600 flex items-center">
+            <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+            {errors[name]}
+          </p>
+        )}
       </div>
-      {errors[name] && (
-        <p className="text-xs sm:text-sm text-red-600 flex items-center">
-          <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-          {errors[name]}
-        </p>
-      )}
-    </div>
-  )
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-4 sm:py-6 md:py-8 relative z-0">
@@ -1240,9 +1440,9 @@ function ApplicationForm() {
                       {formData.type === 'family' ? 'Sponsor Phone Number' : 'Phone Number'} <span className="text-red-500">*</span>
                     </label>
                     <div className="relative phone-number-dropdown">
-                      <div className="flex">
+                      <div className="custom-phone-input">
                         {/* Country Code Dropdown */}
-                        <div className="relative">
+                        <div className="phone-country-selector">
                           <div
                             onClick={() => setIsPhoneDropdownOpen(!isPhoneDropdownOpen)}
                             onKeyDown={handlePhoneKeyDown}
@@ -1353,92 +1553,88 @@ function ApplicationForm() {
                         </div>
 
                         {/* Phone Number Input */}
-                        <input
-                        style={{
-                          outline: 'none !important ',
-                          
-                        }}
-                          type="tel"
-                          value={formData.phone.replace(selectedCountryCode, '')}
-                          onChange={(e) => {
-                            const phoneNumber = selectedCountryCode + e.target.value.replace(/[^0-9]/g, '')
-                            setFormData(prev => ({
-                              ...prev,
-                              phone: phoneNumber
-                            }))
-                            
-                            // Real-time validation
-                            const phoneWithoutCode = e.target.value.replace(/[^0-9]/g, '')
-                            let minLength = 7
-                            let maxLength = 15
-                            
-                            // Set specific length requirements for common countries
-                            if (selectedCountryCode === '+971') { // UAE
-                              minLength = 8
-                              maxLength = 9
-                            } else if (selectedCountryCode === '+966') { // Saudi Arabia
-                              minLength = 8
-                              maxLength = 9
-                            } else if (selectedCountryCode === '+965') { // Kuwait
-                              minLength = 7
-                              maxLength = 8
-                            } else if (selectedCountryCode === '+974') { // Qatar
-                              minLength = 7
-                              maxLength = 8
-                            } else if (selectedCountryCode === '+973') { // Bahrain
-                              minLength = 7
-                              maxLength = 8
-                            } else if (selectedCountryCode === '+968') { // Oman
-                              minLength = 7
-                              maxLength = 8
-                            } else if (selectedCountryCode === '+1') { // US/Canada
-                              minLength = 10
-                              maxLength = 10
-                            } else if (selectedCountryCode === '+44') { // UK
-                              minLength = 10
-                              maxLength = 11
-                            } else if (selectedCountryCode === '+91') { // India
-                              minLength = 10
-                              maxLength = 10
-                            } else if (selectedCountryCode === '+86') { // China
-                              minLength = 10
-                              maxLength = 11
-                            }
-                            
-                            // Clear error if validation passes
-                            if (phoneWithoutCode.length >= minLength && phoneWithoutCode.length <= maxLength && /^\d+$/.test(phoneWithoutCode)) {
-                              if (errors.phone) {
-                                setErrors(prev => ({
-                                  ...prev,
-                                  phone: ''
-                                }))
-                              }
-                            } else if (phoneWithoutCode.length > 0) {
-                              // Show error if validation fails
-                              let errorMessage = ''
-                              if (phoneWithoutCode.length < minLength) {
-                                errorMessage = `Phone number must be at least ${minLength} digits`
-                              } else if (phoneWithoutCode.length > maxLength) {
-                                errorMessage = `Phone number cannot exceed ${maxLength} digits`
-                              } else if (!/^\d+$/.test(phoneWithoutCode)) {
-                                errorMessage = 'Phone number must contain only digits'
+                        <div className="phone-number-field">
+                          <input
+                            type="tel"
+                            value={formData.phone.replace(selectedCountryCode, '')}
+                            onChange={(e) => {
+                              const phoneNumber = selectedCountryCode + e.target.value.replace(/[^0-9]/g, '')
+                              setFormData(prev => ({
+                                ...prev,
+                                phone: phoneNumber
+                              }))
+                              
+                              // Real-time validation
+                              const phoneWithoutCode = e.target.value.replace(/[^0-9]/g, '')
+                              let minLength = 7
+                              let maxLength = 15
+                              
+                              // Set specific length requirements for common countries
+                              if (selectedCountryCode === '+971') { // UAE
+                                minLength = 8
+                                maxLength = 9
+                              } else if (selectedCountryCode === '+966') { // Saudi Arabia
+                                minLength = 8
+                                maxLength = 9
+                              } else if (selectedCountryCode === '+965') { // Kuwait
+                                minLength = 7
+                                maxLength = 8
+                              } else if (selectedCountryCode === '+974') { // Qatar
+                                minLength = 7
+                                maxLength = 8
+                              } else if (selectedCountryCode === '+973') { // Bahrain
+                                minLength = 7
+                                maxLength = 8
+                              } else if (selectedCountryCode === '+968') { // Oman
+                                minLength = 7
+                                maxLength = 8
+                              } else if (selectedCountryCode === '+1') { // US/Canada
+                                minLength = 10
+                                maxLength = 10
+                              } else if (selectedCountryCode === '+44') { // UK
+                                minLength = 10
+                                maxLength = 11
+                              } else if (selectedCountryCode === '+91') { // India
+                                minLength = 10
+                                maxLength = 10
+                              } else if (selectedCountryCode === '+86') { // China
+                                minLength = 10
+                                maxLength = 11
                               }
                               
-                              if (errorMessage) {
-                                setErrors(prev => ({
-                                  ...prev,
-                                  phone: errorMessage
-                                }))
+                              // Clear error if validation passes
+                              if (phoneWithoutCode.length >= minLength && phoneWithoutCode.length <= maxLength && /^\d+$/.test(phoneWithoutCode)) {
+                                if (errors.phone) {
+                                  setErrors(prev => ({
+                                    ...prev,
+                                    phone: ''
+                                  }))
+                                }
+                              } else if (phoneWithoutCode.length > 0) {
+                                // Show error if validation fails
+                                let errorMessage = ''
+                                if (phoneWithoutCode.length < minLength) {
+                                  errorMessage = `Phone number must be at least ${minLength} digits`
+                                } else if (phoneWithoutCode.length > maxLength) {
+                                  errorMessage = `Phone number cannot exceed ${maxLength} digits`
+                                } else if (!/^\d+$/.test(phoneWithoutCode)) {
+                                  errorMessage = 'Phone number must contain only digits'
+                                }
+                                
+                                if (errorMessage) {
+                                  setErrors(prev => ({
+                                    ...prev,
+                                    phone: errorMessage
+                                  }))
+                                }
                               }
-                            }
-                          }}
-                          placeholder="Enter phone number"
-                         
-                            className={`flex-1 text-sm sm:text-base border border-l-0 rounded-r-md p-3  ${
-                            errors.phone ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                            }}
+                            placeholder="Enter phone number"
+                            className={`w-full text-sm sm:text-base border border-l-0 rounded-r-md p-3 ${
+                              errors.phone ? 'border-red-500' : 'border-gray-300'
+                            }`}
                           />
-                         
+                        </div>
                       </div>
                     </div>
                     {errors.phone && (

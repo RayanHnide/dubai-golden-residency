@@ -1447,7 +1447,7 @@ function ApplicationForm() {
                             onClick={() => setIsPhoneDropdownOpen(!isPhoneDropdownOpen)}
                             onKeyDown={handlePhoneKeyDown}
                             tabIndex={0}
-                            className={`flex items-center space-x-2 px-3 py-3 border border-r-0 rounded-l-md cursor-pointer transition-all duration-200 ${
+                            className={`flex items-center space-x-2 px-3  h-[40px] md:h-[50px]  border border-r-0 rounded-l-md cursor-pointer transition-all duration-200 ${
                               isPhoneDropdownOpen 
                                 ? 'border-purple-500 ring-2 ring-purple-500 ring-opacity-20' 
                                 : 'border-gray-300 hover:border-purple-400'
@@ -1456,7 +1456,7 @@ function ApplicationForm() {
                             <span className="text-lg">{selectedCountryFlag}</span>
                             <span className="text-sm font-medium text-gray-700">{selectedCountryCode}</span>
                             <svg
-                              className={`w-4 h-4 transition-transform duration-200 ${
+                              className={`w-2 h-2 transition-transform duration-200 ${
                                 isPhoneDropdownOpen ? 'rotate-180' : ''
                               }`}
                               fill="none"
@@ -1469,7 +1469,7 @@ function ApplicationForm() {
 
                           {/* Phone Country Dropdown */}
                           {isPhoneDropdownOpen && (
-                            <div className="absolute z-40 w-80 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
+                            <div className="absolute z-40 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-hidden">
                               {/* Search Input */}
                               <div className="p-3 border-b border-gray-100">
                                 <div className="relative">
@@ -1630,7 +1630,7 @@ function ApplicationForm() {
                               }
                             }}
                             placeholder="Enter phone number"
-                            className={`w-full text-sm sm:text-base border border-l-0 rounded-r-md p-3 ${
+                            className={`w-full text-sm sm:text-base border border-l-0 rounded-r-md p-3 h-[40px] md:h-[50px] ${
                               errors.phone ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />

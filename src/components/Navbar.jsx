@@ -48,11 +48,7 @@ function Navbar() {
     // Force complete page refresh for Apply Now navigation
     window.location.href = '/application-form?type=ten_years'
   }
-
-  const handleLoginNavigation = () => {
-    // Force complete page refresh for Login navigation
-    window.location.href = '/login'
-  }
+ 
 
   return (
     <header>
@@ -190,15 +186,7 @@ function Navbar() {
               >
                 Apply Now
               </Button>
-              {location.pathname !== '/login' && (
-                <Button 
-                  variant="outline"
-                  className="w-full mt-2 border-purple-600 text-purple-600 hover:bg-purple-50"
-                  onClick={handleLoginNavigation}
-                >
-                  Login
-                </Button>
-              )}
+              
             </div>
           </div>
         )}

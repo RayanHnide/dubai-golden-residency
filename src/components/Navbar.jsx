@@ -177,6 +177,10 @@ function Navbar() {
               </button>
               <button
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-purple-600 hover:bg-gray-50 w-full text-left"
+                onClick={() => {
+                  window.open('https://wa.me/971563700590', '_blank')
+                  setIsMenuOpen(false)
+                }}
               >
                 Contact Us
               </button>
